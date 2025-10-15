@@ -1,6 +1,7 @@
-from sqlalchemy.orm import Session
+from typing import List, Optional
+
 from sqlalchemy import select
-from typing import Optional, List
+from sqlalchemy.orm import Session
 
 from db.schemas import Income
 from models.income_models import IncomeAdd, IncomeUpdate
@@ -31,9 +32,11 @@ class IncomeRepository:
         return self.session.get(Income, income_id)  # type: ignore
 
     def get_all(self, skip: int = 0, limit: int = 100) -> List[Income]:
-        return list(
-            self.session.scalars(statement=select(Income).offset(skip).limit(limit))
-        )
+        return list(self.session.scalars(statement=select(Income).offset(skip).limit(limit)))
+
+    def get_all_by_period(self, period_id: int, skip: int = 0, limit: int = 10) -> list[Income]:
+        statement = select(Income).where(Income.period_id == period_id).offset(skip).limit(limit)
+        return list(self.session.scalars(statement))
 
     def update(self, income_id: int, income_update: IncomeUpdate) -> Optional[Income]:
         db_income = self.get_one(income_id)
@@ -43,7 +46,6 @@ class IncomeRepository:
 
         for key, value in update_data.items():
             setattr(db_income, key, value)
-
         self.session.commit()
         self.session.refresh(db_income)
         return db_income
@@ -53,7 +55,7 @@ class IncomeRepository:
         if not db_income:
             return False
         db_period = self.period_repository.get_by_id(db_income.period_id)
-        if not  db_period:
+        if not db_period:
             return False
 
         try:
