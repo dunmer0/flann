@@ -1,8 +1,8 @@
+from datetime import date
 from typing import List
 
+from sqlalchemy import Date, Float, ForeignKey, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy import Date, Float, String, ForeignKey
-from datetime import date
 
 
 class Base(DeclarativeBase):
@@ -27,16 +27,18 @@ class Income(Base):
     __tablename__ = "incomes"
     name: Mapped[str] = mapped_column(String, nullable=False)
     amount: Mapped[float] = mapped_column(Float, nullable=False)
-    date: Mapped[date] = mapped_column(Date, nullable=False)
-    period_id: Mapped[int] = mapped_column(ForeignKey("period.id",ondelete="CASCADE"))
+    added: Mapped[date] = mapped_column(Date, nullable=False)
+    period_id: Mapped[int] = mapped_column(
+        ForeignKey("period.id", ondelete="CASCADE")
+    )
 
 
-class Catergory(Base):
+class Category(Base):
     __tablename__ = "categories"
 
     name: Mapped[str] = mapped_column(String, nullable=False)
-    anticipated_expensed: Mapped[float] = mapped_column(Float, nullable=False)
-    actual_expenses: Mapped[float] = mapped_column(Float)
+    anticipated_expense: Mapped[float] = mapped_column(Float, nullable=False)
+    actual_expenses: Mapped[float] = mapped_column(Float, nullable=True)
 
     expenses: Mapped[List["Expense"]] = relationship(backref="category")
 
@@ -45,5 +47,7 @@ class Expense(Base):
     __tablename__ = "expenses"
     name: Mapped[str] = mapped_column(String, nullable=False)
     cost: Mapped[float] = mapped_column(Float, nullable=False)
-    period_id: Mapped[int] = mapped_column(ForeignKey("period.id", ondelete="CASCADE"))
+    period_id: Mapped[int] = mapped_column(
+        ForeignKey("period.id", ondelete="CASCADE")
+    )
     category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"))

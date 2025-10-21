@@ -23,7 +23,7 @@
         "ruff": {
             "initialization_options": {
                 "settings": {
-                    "lineLength": 100,
+                    "lineLength": 88,
                     "lint": {
                         "enable": true,
                         "select": ["E", "F", "I"]

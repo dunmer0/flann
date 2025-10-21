@@ -9,7 +9,9 @@ from repository.period_repository import PeriodRepository
 
 
 class IncomeRepository:
-    def __init__(self, session: Session, period_repository: PeriodRepository) -> None:
+    def __init__(
+        self, session: Session, period_repository: PeriodRepository
+    ) -> None:
         self.session = session
         self.period_repository = period_repository
 
@@ -32,15 +34,28 @@ class IncomeRepository:
         return self.session.get(Income, income_id)  # type: ignore
 
     def get_all(self, skip: int = 0, limit: int = 100) -> List[Income]:
-        return list(self.session.scalars(statement=select(Income).offset(skip).limit(limit)))
+        return list(
+            self.session.scalars(
+                statement=select(Income).offset(skip).limit(limit)
+            )
+        )
 
-    def get_all_by_period(self, period_id: int, skip: int = 0, limit: int = 10) -> list[Income]:
-        statement = select(Income).where(Income.period_id == period_id).offset(skip).limit(limit)
+    def get_all_by_period(
+        self, period_id: int, skip: int = 0, limit: int = 10
+    ) -> list[Income]:
+        statement = (
+            select(Income)
+            .where(Income.period_id == period_id)
+            .offset(skip)
+            .limit(limit)
+        )
         return list(self.session.scalars(statement))
 
-    def update(self, income_id: int, income_update: IncomeUpdate) -> Optional[Income]:
+    def update(
+        self, income_id: int, income_update: IncomeUpdate
+    ) -> Optional[Income]:
         db_income = self.get_one(income_id)
-        if db_income:
+        if not db_income:
             return None
         update_data = income_update.model_dump(exclude_unset=True)
 

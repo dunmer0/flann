@@ -1,8 +1,7 @@
-from http.client import SERVICE_UNAVAILABLE
 from fastapi import APIRouter
+
 from deps import IncomeServiceDep
 from models import IncomeAdd, IncomeRead, IncomeUpdate
-
 
 router = APIRouter()
 
@@ -13,7 +12,9 @@ def add_income(service: IncomeServiceDep, income_add: IncomeAdd) -> IncomeRead:
 
 
 @router.put(path="/", response_model=IncomeRead)
-def update_income(service: IncomeServiceDep, income_update: IncomeUpdate) -> IncomeRead:
+def update_income(
+    service: IncomeServiceDep, income_update: IncomeUpdate
+) -> IncomeRead:
     return service.update_income(income_update)
 
 
