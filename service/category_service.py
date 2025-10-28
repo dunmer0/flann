@@ -10,20 +10,24 @@ class CategoryService:
 
     def add_category(self, category: CategoryAdd) -> CategoryRead:
         category_db = self.repository.add_category(
-            category_data=category.model_dump()
+            category_data=category
         )
         return CategoryRead.model_validate(category_db)
 
     def get_category(self, category_id: int) -> CategoryRead:
         category_db = self.repository.get_category(category_id)
+
         if not category_db:
             raise ServiceException(
                 f"There is no category with id: {category_id}"
             )
-        return CategoryRead.model_validate(category_db, from_attributes=True)
+        category = CategoryRead.model_validate(category_db, from_attributes=True)
+        for expense in category_db.expenses:
+            category.actual_expenses += expense.cost
+        return category
 
     def get_categories(
-        self, skip: int = 0, limit: int = 10
+            self, skip: int = 0, limit: int = 10
     ) -> list[CategoryRead]:
         return [
             CategoryRead.model_validate(category)

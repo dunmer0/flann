@@ -19,8 +19,7 @@ class Period(Base):
     start: Mapped[date] = mapped_column(Date, nullable=False)
     end: Mapped[date] = mapped_column(Date, nullable=False)
 
-    incomes: Mapped[List["Income"]] = relationship(backref="period")
-    expenses: Mapped[List["Expense"]] = relationship(backref="period")
+
 
 
 class Income(Base):
@@ -38,7 +37,8 @@ class Category(Base):
 
     name: Mapped[str] = mapped_column(String, nullable=False)
     anticipated_expense: Mapped[float] = mapped_column(Float, nullable=False)
-    actual_expenses: Mapped[float] = mapped_column(Float, nullable=True)
+    period_id: Mapped[int] = mapped_column(ForeignKey("period.id", ondelete="CASCADE"))
+
 
     expenses: Mapped[List["Expense"]] = relationship(backref="category")
 

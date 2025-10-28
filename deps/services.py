@@ -1,3 +1,5 @@
+
+
 from typing import Annotated
 
 from fastapi import Depends
@@ -20,6 +22,14 @@ PeriodRepositoryDep = Annotated[
     PeriodRepository, Depends(get_period_repository)
 ]
 
+def get_category_repository(session: SessionDep) -> CategoryRepository:
+    return CategoryRepository(session=session)
+
+
+CategoryRepositoryDep = Annotated[
+    CategoryRepository, Depends(get_category_repository)
+]
+
 
 def get_period_service(repository: PeriodRepositoryDep) -> PeriodService:
     return PeriodService(repository)
@@ -39,20 +49,14 @@ IncomeRepositoryDep = Annotated[
 ]
 
 
-def get_income_service(repository: IncomeRepositoryDep) -> IncomeService:
-    return IncomeService(repository)
+def get_income_service(income_repo: IncomeRepositoryDep, category_repo: CategoryRepositoryDep) -> IncomeService:
+    return IncomeService(income_repo, category_repo)
 
 
 IncomeServiceDep = Annotated[IncomeService, Depends(get_income_service)]
 
 
-def get_category_repository(session: SessionDep) -> CategoryRepository:
-    return CategoryRepository(session=session)
 
-
-CategoryRepositoryDep = Annotated[
-    CategoryRepository, Depends(get_category_repository)
-]
 
 
 def get_category_service(repository: CategoryRepositoryDep) -> CategoryService:

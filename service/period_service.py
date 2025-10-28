@@ -16,10 +16,10 @@ class PeriodService:
     def get_period(self, period_id: int) -> PeriodRead:
         return PeriodRead.model_validate(self.__repository.get_by_id(period_id))
 
-    def get_all_periods(self, skip: int = 0, limit: int = 100) -> list[PeriodRead]:
+    def get_all_periods(self, skip: int = 0, limit: int = 10) -> list[PeriodRead]:
         return [PeriodRead.model_validate(period) for period in self.__repository.get_all(skip, limit)]
 
-    def delete_period(self, period_id:int)->bool:
+    def delete_period(self, period_id:int)->None:
         return self.__repository.delete(period_id)
 
     def update_period(self, period_to_update:PeriodToUpdate)-> PeriodRead:

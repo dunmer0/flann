@@ -20,8 +20,9 @@ class IncomeAdd(BaseModel):
 
 
 class IncomeRead(BaseModel):
-    name: str
+    id: int
     amount: float
+    name: str
     date: date
 
     model_config = ConfigDict(from_attributes=True)
