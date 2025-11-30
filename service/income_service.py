@@ -5,7 +5,8 @@ from service.service_exception import ServiceException
 
 
 class IncomeService:
-    def __init__(self, income_repository: IncomeRepository, category_repository: CategoryRepository) -> None:
+    def __init__(self, income_repository: IncomeRepository,
+                 category_repository: CategoryRepository) -> None:
         self.__income_repository = income_repository
         self.__category_repository = category_repository
 
@@ -18,9 +19,10 @@ class IncomeService:
     def get_income(self, income_id: int) -> IncomeRead:
         return IncomeRead.model_validate(self.__income_repository.get_one(income_id))
 
-    def get_all_incomes(self, skip:int, limit:int) -> list[IncomeRead]:
+    def get_all_incomes(self, skip: int, limit: int) -> list[IncomeRead]:
         return [
-            IncomeRead.model_validate(income) for income in self.__income_repository.get_all(skip, limit)
+            IncomeRead.model_validate(income) for income in
+            self.__income_repository.get_all(skip, limit)
         ]
 
     def delete_income(self, income_id: int) -> None:

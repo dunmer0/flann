@@ -13,7 +13,7 @@ def add_income(service: IncomeServiceDep, income_add: IncomeAdd) -> IncomeRead:
 
 @router.put(path="/", response_model=IncomeRead)
 def update_income(
-    service: IncomeServiceDep, income_update: IncomeUpdate
+        service: IncomeServiceDep, income_update: IncomeUpdate
 ) -> IncomeRead:
     return service.update_income(income_update)
 
@@ -25,11 +25,11 @@ def get_income(service: IncomeServiceDep, income_id: int) -> IncomeRead:
 
 @router.get(path="/", response_model=list[IncomeRead])
 def get_all_incomes(
-    service: IncomeServiceDep, skip: int, limit: int
+        service: IncomeServiceDep, skip: int, limit: int
 ) -> list[IncomeRead]:
     return service.get_all_incomes(skip, limit)
 
 
-@router.delete(path="/{income_id}", response_model=bool)
-def delete_income(service: IncomeServiceDep, income_id: int) -> bool:
+@router.delete(path="/{income_id}", response_model=None)
+def delete_income(service: IncomeServiceDep, income_id: int) -> None:
     return service.delete_income(income_id)

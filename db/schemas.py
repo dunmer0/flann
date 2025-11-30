@@ -19,7 +19,7 @@ class Period(Base):
     start: Mapped[date] = mapped_column(Date, nullable=False)
     end: Mapped[date] = mapped_column(Date, nullable=False)
 
-
+    categories: Mapped[list["Category"]] = relationship(backref="period")
 
 
 class Income(Base):
@@ -27,18 +27,19 @@ class Income(Base):
     name: Mapped[str] = mapped_column(String, nullable=False)
     amount: Mapped[float] = mapped_column(Float, nullable=False)
     added: Mapped[date] = mapped_column(Date, nullable=False)
-    period_id: Mapped[int] = mapped_column(
-        ForeignKey("period.id", ondelete="CASCADE")
-    )
+    period_id: Mapped[int] = mapped_column(ForeignKey("period.id", ondelete="CASCADE"))
 
+class CategoryName(Base):
+    __tablename__= "category_names"
+
+    name: Mapped[str] = mapped_column(String, nullable=False)
 
 class Category(Base):
     __tablename__ = "categories"
 
-    name: Mapped[str] = mapped_column(String, nullable=False)
-    anticipated_expense: Mapped[float] = mapped_column(Float, nullable=False)
+    category_name: Mapped[int] = mapped_column(ForeignKey("category_names.id"))
+    anticipated_expense: Mapped[float] = mapped_column(Float, nullable=True)
     period_id: Mapped[int] = mapped_column(ForeignKey("period.id", ondelete="CASCADE"))
-
 
     expenses: Mapped[List["Expense"]] = relationship(backref="category")
 
@@ -46,8 +47,8 @@ class Category(Base):
 class Expense(Base):
     __tablename__ = "expenses"
     name: Mapped[str] = mapped_column(String, nullable=False)
-    cost: Mapped[float] = mapped_column(Float, nullable=False)
-    period_id: Mapped[int] = mapped_column(
-        ForeignKey("period.id", ondelete="CASCADE")
+    cost: Mapped[float] = mapped_column(Float, nullable=True)
+
+    category_id: Mapped[int] = mapped_column(
+        ForeignKey("categories.id", ondelete="CASCADE")
     )
-    category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"))

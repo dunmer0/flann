@@ -1,4 +1,4 @@
-from typing import Generator, Any, Annotated
+from typing import Annotated, Any, Generator
 
 from fastapi import Depends
 from sqlalchemy.orm import Session

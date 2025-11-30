@@ -10,10 +10,7 @@ dependencies = [
     "sqlalchemy>=2.0.43",
 ]
 
-[dependency-groups]
-dev = [
-    "ruff>=0.13.3",
-]
+
 
 [tool.ruff]
 line-length = 88

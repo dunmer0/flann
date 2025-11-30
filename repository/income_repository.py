@@ -6,14 +6,13 @@ from sqlalchemy.orm import Session
 
 from db.schemas import Income
 from models.income_models import IncomeAdd, IncomeUpdate
-from repository.period_repository import PeriodRepository
 from repository.repository_exceptions import RepositoryError
 
 
 class IncomeRepository:
-    def __init__(self, session: Session, period_repository: PeriodRepository) -> None:
+    def __init__(self, session: Session) -> None:
         self.session = session
-        # self.period_repository = period_repository
+
 
     def add(self, income_add: IncomeAdd) -> Income:
         new_income = Income(**income_add.model_dump())

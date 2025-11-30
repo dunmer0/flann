@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from db.schemas import Period
 from models.period_models import PeriodToAdd, PeriodToUpdate
@@ -10,7 +10,6 @@ from repository.repository_exceptions import RepositoryError
 
 class PeriodRepository:
     def __init__(self, session: Session):
-
         self.session = session
 
     def add(self, period_to_add: PeriodToAdd) -> Period:
@@ -23,7 +22,7 @@ class PeriodRepository:
         Returns:
             PeriodToAdd: Period to add
 
-       """
+        """
         period = Period(**period_to_add.model_dump())
         self.session.add(period)
         self.session.commit()
@@ -40,6 +39,14 @@ class PeriodRepository:
         """
         return self.session.get(Period, period_id)
 
+    def get_period_with_categories(self, period_id: int) -> Optional[Period]:
+        stmt = (
+            select(Period)
+            .options(joinedload(Period.categories))
+            .where(Period.id == period_id)
+        )
+        return self.session.scalars(stmt).first()
+
     def get_all(self, skip: int, limit: int) -> List[Period]:
         """
         Get all periods
@@ -52,9 +59,7 @@ class PeriodRepository:
         statement = select(Period).offset(skip).limit(limit)
         return list(self.session.scalars(statement))
 
-    def update(
-            self, period_id: int, period_update: PeriodToUpdate
-    ) -> Period:
+    def update(self, period_id: int, period_update: PeriodToUpdate) -> Period:
         """
         Update a period
         Args:

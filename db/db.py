@@ -1,9 +1,8 @@
-from typing import Annotated, Generator, Any
 
-from fastapi import Depends
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
 import os
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 os.makedirs("database", exist_ok=True)
 

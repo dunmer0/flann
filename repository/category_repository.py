@@ -1,8 +1,8 @@
-from typing import Any, Optional
+from typing import Optional
 
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from db.schemas import Category
 from models.category_models import CategoryAdd, CategoryUpdate
@@ -27,6 +27,14 @@ class CategoryRepository:
     def get_category(self, category_id: int) -> Optional[Category]:
         return self.session.get(Category, category_id)
 
+    def get_category_with_expenes(self, category_id: int) -> Optional[Category]:
+        stmt = (
+            select(Category)
+            .options(joinedload(Category.expenses))
+            .where(Category.id == category_id)
+        )
+        return self.session.scalars(stmt).first()
+
     def get_categories(self, skip: int, limit: int) -> list[Category]:
         return list(
             self.session.scalars(statement=select(Category).offset(skip).limit(limit))
@@ -40,7 +48,7 @@ class CategoryRepository:
         """
         self.session.merge(category)
         update_model = update_data.model_dump(exclude_unset=True)
-        for key, value in update_model:
+        for key, value in update_model.items():
             setattr(category, key, value)
         try:
             self.session.commit()

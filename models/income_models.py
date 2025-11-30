@@ -6,7 +6,6 @@ from datetime import date
 #     amount: Mapped[float] = mapped_column(Float, nullable=False)
 #     date: Mapped[date] = mapped_column(Date, nullable=False)
 #     period_id: Mapped[int] = mapped_column(ForeignKey("period.id",ondelete="CASCADE"))
-
 from pydantic import BaseModel, ConfigDict
 
 
