@@ -1,5 +1,11 @@
-from models.period_models import PeriodRead, PeriodReadWithCategories, PeriodToAdd, PeriodToUpdate
+from models.period_models import (
+    PeriodRead,
+    PeriodReadWithCategories,
+    PeriodToAdd,
+    PeriodToUpdate,
+)
 from repository.period_repository import PeriodRepository
+from service.service_exception import ServiceException
 
 
 class PeriodService:
@@ -13,9 +19,27 @@ class PeriodService:
     def get_period(self, period_id: int) -> PeriodRead:
         return PeriodRead.model_validate(self.__repository.get_by_id(period_id))
 
-    def get_period_with_categories(self, period_id: int)->PeriodReadWithCategories:
+    # def get_period_with_categories(self, period_id: int) -> PeriodReadWithCategories:
+    #     db_period = self.__repository.get_period_with_categories(period_id)
+
+    #     if not db_period:
+    #         raise ServiceException(f"Could not find period with id: {period_id}")
+
+    #     return PeriodReadWithCategories.from_period(db_period)
+    #
+    def get_period_with_categories(self, period_id: int) -> PeriodReadWithCategories:
         db_period = self.__repository.get_period_with_categories(period_id)
-        return PeriodReadWithCategories.model_validate(db_period)
+        if not db_period:
+            raise ServiceException(f"Could not find period with id: {period_id}")
+        period_dto = PeriodReadWithCategories.from_period(db_period)
+
+        for category_dto, category_db in zip(
+            period_dto.categories, db_period.categories
+        ):
+            category_dto.actual_expenses = sum(
+                expense.cost for expense in category_db.expenses
+            )
+        return period_dto
 
     def get_all_periods(self, skip: int = 0, limit: int = 10) -> list[PeriodRead]:
         return [

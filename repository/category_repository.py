@@ -5,7 +5,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, joinedload
 
 from db.schemas import Category
-from models.category_models import CategoryAdd, CategoryUpdate
+from models.category_models import CategoryUpdate
 from repository.repository_exceptions import RepositoryError
 
 
@@ -13,8 +13,7 @@ class CategoryRepository:
     def __init__(self, session: Session) -> None:
         self.session = session
 
-    def add_category(self, category_data: CategoryAdd) -> Category:
-        category = Category(**category_data.model_dump())
+    def add_category(self, category: Category) -> Category:
         try:
             self.session.add(category)
             self.session.commit()
@@ -27,21 +26,24 @@ class CategoryRepository:
     def get_category(self, category_id: int) -> Optional[Category]:
         return self.session.get(Category, category_id)
 
-    def get_category_with_expenes(self, category_id: int) -> Optional[Category]:
+    def get_category_with_expenses(self, category_id: int) -> Optional[Category]:
         stmt = (
             select(Category)
-            .options(joinedload(Category.expenses))
+            .options(joinedload(Category.expenses), joinedload(Category.category_name))
             .where(Category.id == category_id)
         )
-        return self.session.scalars(stmt).first()
+        return self.session.scalar(stmt)
 
     def get_categories(self, skip: int, limit: int) -> list[Category]:
+        stmt = select(Category).options(
+            joinedload(Category.expenses), joinedload(Category.category_name)).offset(
+            skip).limit(limit)
         return list(
-            self.session.scalars(statement=select(Category).offset(skip).limit(limit))
+            self.session.scalars(stmt).unique()
         )
 
     def update_category(
-        self, category: Category, update_data: CategoryUpdate
+            self, category: Category, update_data: CategoryUpdate
     ) -> Category:
         """
         Update a category

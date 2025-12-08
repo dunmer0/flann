@@ -19,12 +19,14 @@ class PeriodToUpdate(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
 class PeriodRead(BaseModel):
     id: int
     start: date
     end: date
 
     model_config = ConfigDict(from_attributes=True)
+
 
 class PeriodReadWithCategories(BaseModel):
     id: int
@@ -33,3 +35,12 @@ class PeriodReadWithCategories(BaseModel):
     categories: list[CategoryRead]
 
     model_config = ConfigDict(from_attributes=True)
+
+    @classmethod
+    def from_period(cls, period):
+        return cls.model_validate({
+            "id": period.id,
+            "start": period.start,
+            "end": period.end,
+            "categories": [CategoryRead.from_category(c) for c in period.categories],
+        })

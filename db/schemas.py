@@ -3,6 +3,7 @@ from typing import List
 
 from sqlalchemy import Date, Float, ForeignKey, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.sql.expression import null
 
 
 class Base(DeclarativeBase):
@@ -29,25 +30,34 @@ class Income(Base):
     added: Mapped[date] = mapped_column(Date, nullable=False)
     period_id: Mapped[int] = mapped_column(ForeignKey("period.id", ondelete="CASCADE"))
 
+
 class CategoryName(Base):
-    __tablename__= "category_names"
+    __tablename__ = "category_names"
 
     name: Mapped[str] = mapped_column(String, nullable=False)
+
+    categories: Mapped[list["Category"]] = relationship(
+        "Category", back_populates="category_name"
+    )
+
 
 class Category(Base):
     __tablename__ = "categories"
 
-    category_name: Mapped[int] = mapped_column(ForeignKey("category_names.id"))
+    category_name_id: Mapped[int] = mapped_column(ForeignKey("category_names.id"))
     anticipated_expense: Mapped[float] = mapped_column(Float, nullable=True)
     period_id: Mapped[int] = mapped_column(ForeignKey("period.id", ondelete="CASCADE"))
 
     expenses: Mapped[List["Expense"]] = relationship(backref="category")
+
+    category_name: Mapped["CategoryName"] = relationship("CategoryName")
 
 
 class Expense(Base):
     __tablename__ = "expenses"
     name: Mapped[str] = mapped_column(String, nullable=False)
     cost: Mapped[float] = mapped_column(Float, nullable=True)
+    date: Mapped[Date] = mapped_column(Date, nullable=True)
 
     category_id: Mapped[int] = mapped_column(
         ForeignKey("categories.id", ondelete="CASCADE")

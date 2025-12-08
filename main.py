@@ -14,7 +14,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,  # type: ignore  # False positive from type checker
-    allow_origins=["http://localhost:4200"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -35,6 +35,5 @@ api_router.include_router(
 )
 api_router.include_router(categories.router, prefix="/categories", tags=["categories"])
 api_router.include_router(expenses.router, prefix="/expenses", tags=["expenses"])
-
 
 app.include_router(api_router)

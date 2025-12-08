@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
@@ -54,7 +54,19 @@ class ExpensesRepository:
             list[Expense]: expense objects or empty list
         """
         return list(
-            self.session.scalars(statement=select(Expense).offset(skip).limit(limit)))
+            self.session.scalars(statement=select(Expense).offset(skip).limit(limit))
+        )
+
+    def get_expenses_by_category_id(self, category_id) -> List[Expense]:
+        """
+        Get all expense by category id
+        Args:
+            category_id: Category id
+        Returns:
+            List[Expense]: expense object connected to category or empty list
+        """
+        stmt = select(Expense).where(Expense.category_id == category_id)
+        return list(self.session.scalars(stmt))
 
     def update_expense(self, expense: Expense, update_data: ExpenseUpdate) -> Expense:
         """
@@ -70,7 +82,7 @@ class ExpensesRepository:
         self.session.merge(expense)
         update_model = update_data.model_dump(exclude_unset=True)
         for key, value in update_model.items():
-            setattr(self, key, value)
+            setattr(expense, key, value)
         try:
             self.session.commit()
             self.session.refresh(expense)

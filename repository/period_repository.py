@@ -3,7 +3,7 @@ from typing import List, Optional
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
-from db.schemas import Period
+from db.schemas import Category, Period
 from models.period_models import PeriodToAdd, PeriodToUpdate
 from repository.repository_exceptions import RepositoryError
 
@@ -42,10 +42,13 @@ class PeriodRepository:
     def get_period_with_categories(self, period_id: int) -> Optional[Period]:
         stmt = (
             select(Period)
-            .options(joinedload(Period.categories))
+            .options(
+                joinedload(Period.categories).joinedload(Category.category_name),
+                joinedload(Period.categories).joinedload(Category.expenses),
+            )
             .where(Period.id == period_id)
         )
-        return self.session.scalars(stmt).first()
+        return self.session.scalar(stmt)
 
     def get_all(self, skip: int, limit: int) -> List[Period]:
         """

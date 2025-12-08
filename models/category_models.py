@@ -1,17 +1,19 @@
 from pydantic import BaseModel, ConfigDict
 
+from db.schemas import Category
+
 
 class CategoryAdd(BaseModel):
-    name: str
     anticipated_expense: float
     period_id: int
+    category_name_id: int
 
     model_config = ConfigDict(from_attributes=True)
 
 
 class CategoryUpdate(BaseModel):
     id: int
-    name: str
+    category_name_id: int
     anticipated_expense: float
 
     model_config = ConfigDict(from_attributes=True)
@@ -24,7 +26,13 @@ class CategoryRead(BaseModel):
     actual_expenses: float = 0
     period_id: int
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, extra="ignore")
+
+    @classmethod
+    def from_category(cls, category: Category):
+        data = category.__dict__.copy()
+        data["name"] = category.category_name.name
+        return cls.model_validate(data)
 
 
 class CategoryNameDTO(BaseModel):
