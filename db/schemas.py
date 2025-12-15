@@ -3,7 +3,6 @@ from typing import List
 
 from sqlalchemy import Date, Float, ForeignKey, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy.sql.expression import null
 
 
 class Base(DeclarativeBase):
@@ -27,7 +26,7 @@ class Income(Base):
     __tablename__ = "incomes"
     name: Mapped[str] = mapped_column(String, nullable=False)
     amount: Mapped[float] = mapped_column(Float, nullable=False)
-    added: Mapped[date] = mapped_column(Date, nullable=False)
+    date: Mapped[date] = mapped_column(Date, nullable=False)
     period_id: Mapped[int] = mapped_column(ForeignKey("period.id", ondelete="CASCADE"))
 
 
@@ -48,7 +47,7 @@ class Category(Base):
     anticipated_expense: Mapped[float] = mapped_column(Float, nullable=True)
     period_id: Mapped[int] = mapped_column(ForeignKey("period.id", ondelete="CASCADE"))
 
-    expenses: Mapped[List["Expense"]] = relationship(backref="category")
+    expenses: Mapped[list["Expense"]] = relationship(backref="category")
 
     category_name: Mapped["CategoryName"] = relationship("CategoryName")
 

@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
@@ -13,7 +11,6 @@ class IncomeRepository:
     def __init__(self, session: Session) -> None:
         self.session = session
 
-
     def add(self, income_add: IncomeAdd) -> Income:
         new_income = Income(**income_add.model_dump())
         try:
@@ -25,10 +22,10 @@ class IncomeRepository:
             self.session.rollback()
             raise RepositoryError(f"Could not add entity: {str(e)}") from e
 
-    def get_one(self, income_id: int) -> Optional[Income]:
-        return self.session.get(Income, income_id)  # type: ignore
+    def get_one(self, income_id: int) -> Income | None:
+        return self.session.get(Income, income_id)
 
-    def get_all(self, skip: int, limit: int) -> List[Income]:
+    def get_all(self, skip: int, limit: int) -> list[Income]:
         return list(
             self.session.scalars(statement=select(Income).offset(skip).limit(limit))
         )

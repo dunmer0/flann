@@ -1,5 +1,3 @@
-from typing import Optional
-
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session, joinedload
@@ -23,10 +21,10 @@ class CategoryRepository:
             self.session.rollback()
             raise RepositoryError(f"Could not add category {str(e)}") from e
 
-    def get_category(self, category_id: int) -> Optional[Category]:
+    def get_category(self, category_id: int) -> Category | None:
         return self.session.get(Category, category_id)
 
-    def get_category_with_expenses(self, category_id: int) -> Optional[Category]:
+    def get_category_with_expenses(self, category_id: int) -> Category | None:
         stmt = (
             select(Category)
             .options(joinedload(Category.expenses), joinedload(Category.category_name))
@@ -35,15 +33,16 @@ class CategoryRepository:
         return self.session.scalar(stmt)
 
     def get_categories(self, skip: int, limit: int) -> list[Category]:
-        stmt = select(Category).options(
-            joinedload(Category.expenses), joinedload(Category.category_name)).offset(
-            skip).limit(limit)
-        return list(
-            self.session.scalars(stmt).unique()
+        stmt = (
+            select(Category)
+            .options(joinedload(Category.expenses), joinedload(Category.category_name))
+            .offset(skip)
+            .limit(limit)
         )
+        return list(self.session.scalars(stmt).unique())
 
     def update_category(
-            self, category: Category, update_data: CategoryUpdate
+        self, category: Category, update_data: CategoryUpdate
     ) -> Category:
         """
         Update a category

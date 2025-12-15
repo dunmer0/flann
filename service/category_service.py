@@ -1,7 +1,6 @@
-from typing import List
-
 from db.schemas import Category
 from models.category_models import CategoryAdd, CategoryRead, CategoryUpdate
+from repository.category_name_repository import CategoryNameRepository
 from repository.category_repository import CategoryRepository
 from repository.period_repository import PeriodRepository
 from repository.repository_exceptions import RepositoryError
@@ -10,24 +9,31 @@ from service.service_exception import ServiceException
 
 class CategoryService:
     def __init__(
-            self, category_repo: CategoryRepository, period_repo: PeriodRepository,
-            # category_name_repo: CategoryNameRepository
+        self,
+        category_repo: CategoryRepository,
+        period_repo: PeriodRepository,
+        category_name_repo: CategoryNameRepository,
     ) -> None:
         self.category_repo = category_repo
         self.period_repo = period_repo
-        # self.category_name_repo = category_name_repo
+        self.category_name_repo = category_name_repo
 
     def add_category(self, category: CategoryAdd) -> CategoryRead:
         period = self.period_repo.get_by_id(category.period_id)
-        # category_name = self.category_name_repo.get_category_name(
-        #     category.category_name_id)
+        category_name = self.category_name_repo.get_category_name_by_name(
+            category.category_name
+        )
         if not period:
             raise ServiceException(f"There is no period with id: {category.period_id}")
-        # if not category_name:
-        #     raise ServiceException(
-        #         f"There is no category name: {category.category_name_id}")
-        category_db = self.category_repo.add_category(Category(**category.model_dump()))
-        return CategoryRead.model_validate(category_db)
+        if not category_name:
+            raise ServiceException(
+                f"There is no category name: {category.category_name}"
+            )
+        category_db = category.model_dump()
+        category_db.pop("category_name", None)
+        category_db["category_name_id"] = category_name.id
+        category_added = self.category_repo.add_category(Category(**category_db))
+        return CategoryRead.from_category(category_added)
 
     def get_category(self, category_id: int) -> CategoryRead:
         category_db = self.category_repo.get_category_with_expenses(category_id)
@@ -44,13 +50,14 @@ class CategoryService:
     #         for category in self.category_repo.get_categories(skip=skip, limit=limit)
     #     ]
 
-    def get_categories(self, skip: int = 0, limit: int = 100) -> List[CategoryRead]:
+    def get_categories(self, skip: int = 0, limit: int = 100) -> list[CategoryRead]:
         categories_db = self.category_repo.get_categories(skip=skip, limit=limit)
         result: list[CategoryRead] = []
         for category_db in categories_db:
             category = CategoryRead.from_category(category_db)
             category.actual_expenses = sum(
-                expense.cost for expense in category_db.expenses)
+                expense.cost for expense in category_db.expenses
+            )
             result.append(category)
         return result
 

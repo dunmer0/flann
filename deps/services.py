@@ -75,9 +75,15 @@ IncomeServiceDep = Annotated[IncomeService, Depends(get_income_service)]
 
 
 def get_category_service(
-    category_repo: CategoryRepositoryDep, period_repo: PeriodRepositoryDep
+    category_repo: CategoryRepositoryDep,
+    period_repo: PeriodRepositoryDep,
+    category_name_repo: CategoryNameRepositoryDep,
 ) -> CategoryService:
-    return CategoryService(category_repo=category_repo, period_repo=period_repo)
+    return CategoryService(
+        category_repo=category_repo,
+        period_repo=period_repo,
+        category_name_repo=category_name_repo,
+    )
 
 
 CategoryServiceDep = Annotated[CategoryService, Depends(get_category_service)]

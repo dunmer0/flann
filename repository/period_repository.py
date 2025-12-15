@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
@@ -29,7 +27,7 @@ class PeriodRepository:
         self.session.refresh(period)
         return period
 
-    def get_by_id(self, period_id: int) -> Optional[Period]:
+    def get_by_id(self, period_id: int) -> Period | None:
         """
         Get a period by id
         Args:
@@ -39,7 +37,7 @@ class PeriodRepository:
         """
         return self.session.get(Period, period_id)
 
-    def get_period_with_categories(self, period_id: int) -> Optional[Period]:
+    def get_period_with_categories(self, period_id: int) -> Period | None:
         stmt = (
             select(Period)
             .options(
@@ -50,7 +48,7 @@ class PeriodRepository:
         )
         return self.session.scalar(stmt)
 
-    def get_all(self, skip: int, limit: int) -> List[Period]:
+    def get_all(self, skip: int, limit: int) -> list[Period]:
         """
         Get all periods
         Args:

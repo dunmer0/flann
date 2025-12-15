@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
@@ -34,9 +32,9 @@ class ExpensesRepository:
             self.session.rollback()
             raise RepositoryError(f"Could not add expense: {str(e)}") from e
 
-    def get_expense(self, expense_id: int) -> Optional[Expense]:
+    def get_expense(self, expense_id: int) -> Expense | None:
         """
-        Get expense by id
+        Get expense by id:
         Args:
             expense_id (int): expense id
         Returns:
@@ -57,7 +55,7 @@ class ExpensesRepository:
             self.session.scalars(statement=select(Expense).offset(skip).limit(limit))
         )
 
-    def get_expenses_by_category_id(self, category_id) -> List[Expense]:
+    def get_expenses_by_category_id(self, category_id) -> list[Expense]:
         """
         Get all expense by category id
         Args:

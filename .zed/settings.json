@@ -1,1 +1,85 @@
-{}
+{
+  "inlay_hints": {
+    "enabled": true,
+    "show_type_hints": true,
+    "show_parameter_hints": true,
+    "show_other_hints": true
+  },
+  "languages": {
+    "Python": {
+      "format_on_save": "on",
+      "formatter": {
+        "external": {
+          "command": "uv",
+          "arguments": ["run", "ruff", "format", "--line-length", "88", "-"]
+        }
+      },
+      "code_actions_on_format": {
+        "source.organizeImports": true,
+        "source.fixAll": true
+      },
+      "tab_size": 4,
+      "hard_tabs": false,
+      "inlay_hints": {
+        "enabled": true,
+        "show_type_hints": true,
+        "show_parameter_hints": true,
+        "show_other_hints": true
+      }
+    }
+  },
+
+  "lsp": {
+    "pyright": {
+      "settings": {
+        "python.analysis.typeCheckingMode": "basic",
+        "python.analysis.autoImportCompletions": true,
+        "python.analysis.diagnosticMode": "workspace",
+        "python.pythonPath": ".venv/bin/python",
+        "python.analysis.inlayHints.variableTypes": true,
+        "python.analysis.inlayHints.functionReturnTypes": true,
+        "python.analysis.inlayHints.parameterTypes": true,
+        "python.analysis.inlayHints.callArgumentNames": true
+      }
+    },
+    "ruff": {
+      "initialization_options": {
+        "settings": {
+          "lint": {
+            "select": ["E", "F", "I", "N", "W", "B", "UP"],
+            "ignore": ["E501"]
+          },
+          "format": {
+            "line-length": 88
+          }
+        }
+      }
+    }
+  },
+
+  "file_types": {
+    "Dockerfile": ["Dockerfile*"],
+    "TOML": ["*.toml"],
+    "YAML": ["*.yml", "*.yaml"],
+    "ENV": ["*.env*", ".env*"]
+  },
+
+  "file_scan_exclusions": [
+    "**/.git",
+    "**/__pycache__",
+    "**/*.pyc",
+    "**/.pytest_cache",
+    "**/.ruff_cache",
+    "**/.mypy_cache",
+    "**/*.egg-info",
+    "**/.venv",
+    "**/venv",
+    "**/node_modules"
+  ],
+
+  "terminal": {
+    "env": {
+      "PYTHONPATH": "${ZED_WORKTREE_ROOT}"
+    }
+  }
+}

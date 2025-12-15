@@ -1,5 +1,3 @@
-from typing import Optional
-
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
@@ -24,13 +22,11 @@ class CategoryNameRepository:
             self.session.refresh(category_name)
             return category_name
 
-    def get_category_name(self, category_name_id: int) -> Optional[CategoryName]:
+    def get_category_name(self, category_name_id: int) -> CategoryName | None:
         print("something")
         return self.session.get(CategoryName, category_name_id)
 
-    def get_category_name_by_name(
-        self, category_name_name: str
-    ) -> Optional[CategoryName]:
+    def get_category_name_by_name(self, category_name_name: str) -> CategoryName | None:
         stmt = select(CategoryName).where(CategoryName.name == category_name_name)
 
         return self.session.scalar(stmt)

@@ -6,7 +6,7 @@ from db.schemas import Category
 class CategoryAdd(BaseModel):
     anticipated_expense: float
     period_id: int
-    category_name_id: int
+    category_name: str
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -21,7 +21,7 @@ class CategoryUpdate(BaseModel):
 
 class CategoryRead(BaseModel):
     id: int
-    name: str
+    category_name: str
     anticipated_expense: float
     actual_expenses: float = 0
     period_id: int
@@ -31,7 +31,7 @@ class CategoryRead(BaseModel):
     @classmethod
     def from_category(cls, category: Category):
         data = category.__dict__.copy()
-        data["name"] = category.category_name.name
+        data["category_name"] = category.category_name.name
         return cls.model_validate(data)
 
 

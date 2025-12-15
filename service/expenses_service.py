@@ -21,7 +21,7 @@ class ExpenseService:
         try:
             return ExpenseRead.model_validate(self.expense_repo.add_expense(expense))
         except RepositoryError as e:
-            raise ServiceException(f"Could not add expense {str(e)}")
+            raise ServiceException(f"Could not add expense {str(e)}") from e
 
     def get_expense(self, expense_id: int) -> ExpenseRead:
         expense = ExpenseRead.model_validate(self.expense_repo.get_expense(expense_id))
