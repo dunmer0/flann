@@ -22,6 +22,12 @@ class IncomeService:
     def get_income(self, income_id: int) -> IncomeRead:
         return IncomeRead.model_validate(self.__income_repository.get_one(income_id))
 
+    def get_incomes_by_period(self, period_id: int) -> list[IncomeRead]:
+        return [
+            IncomeRead.model_validate(income)
+            for income in self.__income_repository.get_by_period_id(period_id)
+        ]
+
     def get_all_incomes(self, skip: int, limit: int) -> list[IncomeRead]:
         return [
             IncomeRead.model_validate(income)

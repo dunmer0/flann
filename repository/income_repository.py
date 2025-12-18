@@ -25,6 +25,11 @@ class IncomeRepository:
     def get_one(self, income_id: int) -> Income | None:
         return self.session.get(Income, income_id)
 
+    def get_by_period_id(self,period_id:int) -> list[Income]:
+        return list(
+            self.session.scalars(select(Income).where(Income.period_id == period_id))
+        )
+
     def get_all(self, skip: int, limit: int) -> list[Income]:
         return list(
             self.session.scalars(statement=select(Income).offset(skip).limit(limit))

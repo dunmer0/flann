@@ -1,3 +1,5 @@
+from re import PatternError
+
 from fastapi import APIRouter
 
 from deps import IncomeServiceDep
@@ -19,6 +21,13 @@ def update_income(service: IncomeServiceDep, income_update: IncomeUpdate) -> Inc
 @router.get(path="/{income_id}", response_model=IncomeRead)
 def get_income(service: IncomeServiceDep, income_id: int) -> IncomeRead:
     return service.get_income(income_id)
+
+
+@router.get(path="/period/{period_id}", response_model=list[IncomeRead])
+def get_incomes_by_period(
+    service: IncomeServiceDep, period_id: int
+) -> list[IncomeRead]:
+    return service.get_incomes_by_period(period_id)
 
 
 @router.get(path="/", response_model=list[IncomeRead])
